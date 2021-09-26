@@ -1,8 +1,7 @@
-# SimpleIndexer
+# SimpleTraversalIndexer
 
-`SimpleIndexer` use `DocumentArrayMemmap` for indexing `Document`. It is recommended to be used in most of the simple use cases when you have less than one million `Document`. 
-
-`SimpleIndexer` leverages `DocumentArrayMmap`'s [`match`](https://docs.jina.ai/api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.match) function and searches the `k` nearst neighbors for the query `Document` based on their `embedding` field by the brutal-force search. By default, it calculates the `cosine` distance and returns all the indexed `Document`.
+`SimpleTraversalIndexer` is based on [`SimpleIndexer`](https://github.com/jina-ai/executor-simpleindexer) and add support to `traversal_paths` so that you can index 
+`embeddings` with at different granularity.
 
 
 

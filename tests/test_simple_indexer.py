@@ -186,3 +186,20 @@ def test_empty_docs(tmp_path):
     metas = {'workspace': str(tmp_path / 'workspace')}
     indexer = SimpleIndexer(metas=metas)
     indexer.index(docs=None)
+
+
+def test_traversal_paths(tmp_path):
+    metas = {'workspace': str(tmp_path / 'workspace')}
+    indexer = SimpleIndexer(traversal_paths=('r', 'c'), metas=metas)
+    num_docs = 3
+    num_chunks = 4
+    docs = DocumentArray()
+    for i in range(num_docs):
+        doc = Document(embedding=np.random.rand(3))
+        for j in range(num_chunks):
+            c = Document(embedding=np.random.rand(3))
+            doc.chunks.append(c)
+        docs.append(doc)
+    indexer.index(docs)
+    assert len(indexer._storage) == num_docs + num_docs * num_chunks
+

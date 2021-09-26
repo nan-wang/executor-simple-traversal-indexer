@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Dict, Optional
+from typing import Dict, Iterable, Optional
 
 from jina import DocumentArray, Executor, requests
 from jina.types.arrays.memmap import DocumentArrayMemmap
@@ -16,28 +16,35 @@ class SimpleIndexer(Executor):
     def __init__(
         self,
         match_args: Optional[Dict] = None,
+        traversal_paths: Iterable[str] = ('r',),
         **kwargs,
     ):
         """
         Initializer function for the simple indexer
         :param match_args: the arguments to `DocumentArray`'s match function
+        :param traversal_paths: Default traversal paths for encoding, used if
+            the traversal path is not passed as a parameter with the request.
         """
         super().__init__(**kwargs)
 
         self._match_args = match_args or {}
         self._storage = DocumentArrayMemmap(self.workspace)
+        self.traversal_paths = traversal_paths
 
     @requests(on='/index')
     def index(
         self,
         docs: Optional['DocumentArray'] = None,
+        parameters: Dict = {},
         **kwargs,
     ):
         """All Documents to the DocumentArray
         :param docs: the docs to add
         """
         if docs:
-            self._storage.extend(docs)
+            traversal_paths = parameters.get(
+                "traversal_paths", self.traversal_paths)
+            self._storage.extend(docs.traverse_flat(traversal_paths))
 
     @requests(on='/search')
     def search(
